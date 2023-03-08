@@ -60,8 +60,7 @@ std::vector<std::vector<size_t>> Vasilevsky::optimization(std::vector<std::vecto
     });
     auto i = T.begin();
     auto j = T.begin();
-    ++j;
-    for (; j != T.end(); ++j) {
+    for (++j; j != T.end(); ++j) {
         if ((*i)[0] != (*j)[0]) {
             std::sort(i, j, [](std::vector<size_t>& f, std::vector<size_t>& s) {
                 return f.size() < s.size();
@@ -69,6 +68,9 @@ std::vector<std::vector<size_t>> Vasilevsky::optimization(std::vector<std::vecto
             i = j;
         }
     }
+    std::sort(i, j, [](std::vector<size_t>& f, std::vector<size_t>& s) {
+        return f.size() < s.size();
+    });
     for (size_t i = 0; i < T.size() - 1; ++i) {
         for (size_t j = i + 1; j < T.size(); ++j) {
             if (T[i][0] != T[j][0]) {
