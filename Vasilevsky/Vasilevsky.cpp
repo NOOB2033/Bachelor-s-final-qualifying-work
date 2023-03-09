@@ -52,51 +52,62 @@ std::vector<std::vector<size_t>> Vasilevsky::concatenation(const std::vector<std
     return result;
 }
 
+
 std::vector<std::vector<size_t>> Vasilevsky::optimization(std::vector<std::vector<size_t>>& T) {
     std::vector<std::vector<size_t>> result;
-    std::vector<size_t> erase_indexes;
+    std::vector<std::vector<size_t>> erase_indexes(12);
     std::sort(T.begin(), T.end(), [](std::vector<size_t>& f, std::vector<size_t>& s) {
         return f[0] < s[0];
     });
-    auto i = T.begin();
-    auto j = T.begin();
-    for (++j; j != T.end(); ++j) {
-        if ((*i)[0] != (*j)[0]) {
-            std::sort(i, j, [](std::vector<size_t>& f, std::vector<size_t>& s) {
-                return f.size() < s.size();
-            });
-            i = j;
+    std::vector<size_t> indexes;
+    size_t it = 0;
+    size_t iv = T[it][0];
+    indexes.push_back(it);
+    for (++it; it < T.size(); ++it) {
+        if (iv != T[it][0]) {
+            indexes.push_back(it);
+            iv = T[it][0];
         }
     }
-    std::sort(i, j, [](std::vector<size_t>& f, std::vector<size_t>& s) {
-        return f.size() < s.size();
-    });
-    for (size_t i = 0; i < T.size() - 1; ++i) {
-        for (size_t j = i + 1; j < T.size(); ++j) {
-            if (T[i][0] != T[j][0]) {
-                break;
-            }
-            bool equality = true;
-            for (size_t k = 0; k < T[i].size(); ++k) {
-                if (T[i][k] != T[j][k]) {
-                    equality = false;
+    indexes.push_back(it);
+
+#pragma omp parallel for
+    for (size_t i = 0; i < indexes.size() - 1; ++i) {
+        std::sort(T.begin() + indexes[i], T.begin() + indexes[i + 1],
+                  [](std::vector<size_t>& f, std::vector<size_t>& s) {
+                      return f.size() < s.size();
+                  });
+
+        for (size_t j = indexes[i]; j < indexes[i + 1] - 1; ++j) {
+            for (size_t k = j + 1; k < indexes[i + 1]; ++k) {
+                bool equality = true;
+                for (size_t e = 0; e < T[j].size(); ++e) {
+                    if (T[j][e] != T[k][e]) {
+                        equality = false;
+                        break;
+                    }
+                }
+
+                if (equality) {
+                    erase_indexes[omp_get_thread_num()].push_back(j);
                     break;
                 }
             }
-            if (equality) {
-                erase_indexes.push_back(i);
-                break;
-            }
         }
     }
-    if (erase_indexes.size() > 0) {
+
+    for (size_t i = 1; i < erase_indexes.size(); ++i) {
+        erase_indexes[0].insert(erase_indexes[0].end(), erase_indexes[i].begin(), erase_indexes[i].end());
+    }
+    if (erase_indexes[0].size() > 0) {
         for (size_t i = 0, erase_counter = 0; i < T.size(); ++i) {
-            if (i != erase_indexes[erase_counter]) {
+            if (i != erase_indexes[0][erase_counter]) {
                 result.push_back(std::move(T[i]));
             } else {
                 ++erase_counter;
             }
         }
     }
+
     return result;
 }
