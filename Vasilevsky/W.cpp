@@ -11,22 +11,18 @@ std::vector<std::vector<size_t>> W::get_W() {
      * с состояниями i+1...size - 1.
      * result - возвращаемое оптимизированное множество различимости.
      */
-    std::vector<std::vector<std::vector<size_t>>> W(12); // 12 - моё количество потоков
+    std::vector<std::vector<std::vector<size_t>>> W(table[0].size() - 1); // 12 - моё количество потоков
     std::vector<std::vector<size_t>> result;
-
-#pragma omp parallel num_threads(12) // 12 - моё количество потоков
-    {
-#pragma parallel for
-        /*
-         * Создаем проверяющий вектор check. Если check[i] = true, значит нашли различающее множество
-         * state и i - 1 - state состояний.
-         * Передаем в функцию вектор который будем заполнять(относительно номера потока),
-         * проверяющий массив и состояние.
-         */
-        for (size_t state = 0; state < table[0].size() - 1; ++state) {
-            std::vector<bool> check(table[0].size() - 1 - state, false);
-            search_setOfDistinctiveness(W[omp_get_thread_num()], check, state);
-        }
+#pragma omp parallel for // 12 - моё количество потоков
+    /*
+    * Создаем проверяющий вектор check. Если check[i] = true, значит нашли различающее множество
+    * state и i - 1 - state состояний.
+    * Передаем в функцию вектор который будем заполнять(относительно номера потока),
+    * проверяющий массив и состояние.
+    */
+    for (size_t state = 0; state < table[0].size() - 1; ++state) {
+        std::vector<bool> check(table[0].size() - 1 - state, false);
+        search_setOfDistinctiveness(W[state], check, state);
     }
 
     result = optimization_W(W);
@@ -41,10 +37,10 @@ void W::search_setOfDistinctiveness(std::vector<std::vector<size_t>>& result,
      * разделяющее множество состояния не будет равно N - 1 (N это число состояний).
      * Ищем в ширину.
      */
-    for (size_t depth = 0; depth < table[0].size() && result.size() < table[0].size() - 1; ++depth) {
+    for (size_t depth = 0; depth < table[0].size() && result.size() < table[0].size() - 1 - state; ++depth) {
         /* Идем в цикле сравнивая со следующими состоянием */
         for (size_t i = state + 1; i < table[0].size(); ++i) {
-            /* Если мы не нашли различающее множества для state и i - 1 - state */
+            /* Если мы не нашли различающее множество для state и i - 1 - state */
             if (!check[i - 1 - state]) {
                 /*
                  *  Добавляем пустое множество и идем сравнивать эти 2 состояния

@@ -10,7 +10,7 @@ public:
 
     void set_table(std::vector<std::vector<std::pair<size_t, size_t>>> table);
 
-    std::vector<size_t> get_Diagnostic_Sequence(const std::vector<size_t>& inputs);
+    std::vector<size_t> get_Diagnostic_Sequence();
 
 private:
 
