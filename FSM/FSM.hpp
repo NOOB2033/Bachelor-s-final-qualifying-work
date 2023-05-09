@@ -5,7 +5,7 @@
 #include "../dependencies/dependencies.hpp"
 
 
-std::vector<std::vector<std::pair<size_t, size_t>>> get_table_from_FSM(std::ifstream& file) {
+std::vector<std::vector<std::pair<size_t, size_t>>> get_table_from_FSM(std::ifstream& file, size_t& outputs) {
     std::string buffer;
 
     std::getline(file, buffer);
@@ -14,6 +14,7 @@ std::vector<std::vector<std::pair<size_t, size_t>>> get_table_from_FSM(std::ifst
     std::getline(file, buffer);
     size_t inputs = std::stoi(buffer.substr(2, buffer.size() - 1));
     std::getline(file, buffer);
+    outputs = std::stoi(buffer.substr(2, buffer.size() - 1));
     std::getline(file, buffer);
     std::getline(file, buffer);
 
@@ -50,20 +51,6 @@ std::vector<std::vector<std::pair<size_t, size_t>>> get_table_from_FSM(std::ifst
     }
 
     return table;
-}
-
-std::vector<size_t> get_Input(std::ifstream& file) {
-    std::string buffer;
-    std::getline(file, buffer);
-    std::getline(file, buffer);
-    std::getline(file, buffer);
-    size_t inputs = std::stoi(buffer.substr(2, buffer.size() - 1));
-    std::vector<size_t> result;
-    for (size_t i = 0; i < inputs; ++i) {
-        result.push_back(i);
-    }
-
-    return result;
 }
 
 
