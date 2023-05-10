@@ -5,7 +5,9 @@ void W::set_table(std::vector<std::vector<std::pair<size_t, size_t>>> table) {
     this->table = std::move(table);
 }
 
-std::vector<std::vector<size_t>> W::get_W() {
+std::vector<std::vector<size_t>> W::get_W(size_t threadCount = 1) {
+    assert(threadCount > 0);
+    assert(threadCount <= std::thread::hardware_concurrency());
     /*
      * Создаем вспомогательные множества. W[i] будет хранить множество, которое будет различать i-ое состояние
      * с состояниями i+1...size - 1.
@@ -13,7 +15,7 @@ std::vector<std::vector<size_t>> W::get_W() {
      */
     std::vector<std::vector<std::vector<size_t>>> W(table[0].size() - 1); // 12 - моё количество потоков
     std::vector<std::vector<size_t>> result;
-#pragma omp parallel for // 12 - моё количество потоков
+#pragma omp parallel for num_threads(threadCount)
     /*
     * Создаем проверяющий вектор check. Если check[i] = true, значит нашли различающее множество
     * state и i - 1 - state состояний.

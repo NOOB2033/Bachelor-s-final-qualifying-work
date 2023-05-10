@@ -9,7 +9,7 @@ class W {
 public:
 
     void set_table(std::vector<std::vector<std::pair<size_t, size_t>>> table);
-    std::vector<std::vector<size_t>> get_W();
+    std::vector<std::vector<size_t>> get_W(size_t threadCount);
 
 private:
 

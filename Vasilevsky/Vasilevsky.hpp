@@ -17,14 +17,16 @@ public:
                                              size_t inputs);
 
     std::vector<std::vector<size_t>> get_T(const std::vector<std::vector<size_t>>& VW,
-                                           const std::vector<std::vector<size_t>>& VIW);
+                                           const std::vector<std::vector<size_t>>& VIW,
+                                           size_t threadCount);
 
 private:
 
     std::vector<std::vector<size_t>> concatenation(const std::vector<std::vector<size_t>>& first,
                                                    const std::vector<std::vector<size_t>>& second);
 
-    std::vector<std::vector<size_t>> optimization(std::vector<std::vector<size_t>>& T);
+    std::vector<std::vector<size_t>> optimization(std::vector<std::vector<size_t>>& T,
+                                                  size_t threadCount);
 };
 
 

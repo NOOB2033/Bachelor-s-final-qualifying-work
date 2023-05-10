@@ -10,7 +10,7 @@
 #include <chrono>
 #include <list>
 #include <thread>
-#include <map>
+#include <cassert>
 
 #include <omp.h>
 

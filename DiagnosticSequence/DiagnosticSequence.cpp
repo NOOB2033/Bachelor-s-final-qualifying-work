@@ -7,7 +7,7 @@ void DiagnosticSequence::set_data(std::vector<std::vector<std::pair<size_t, size
     this->output_size = output_size;
 }
 
-std::vector<size_t> DiagnosticSequence::get_Diagnostic_Sequence() {
+std::vector<size_t> DiagnosticSequence::get_Diagnostic_Sequence(size_t threadCount = 1) {
     std::vector<std::vector<size_t>> paths(table.size());
     std::pair<std::atomic<bool>, std::atomic<size_t>> res{false, 0};
 
@@ -16,7 +16,7 @@ std::vector<size_t> DiagnosticSequence::get_Diagnostic_Sequence() {
         sets.push(i);
     }
     std::vector<size_t> result;
-#pragma omp parallel for
+#pragma omp parallel for num_threads(threadCount)
     for (size_t input = 0; input < paths.size(); ++input) {
         std::vector<std::vector<sorted_list<size_t>>> history(1, std::vector<sorted_list<size_t>>(1, sets));
         std::vector<std::vector<size_t>> indexes(output_size);
@@ -37,7 +37,6 @@ std::vector<size_t> DiagnosticSequence::get_Diagnostic_Sequence() {
         }
         paths[input].pop_back();
     }
-
     return result;
 }
 

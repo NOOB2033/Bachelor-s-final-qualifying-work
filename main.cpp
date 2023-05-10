@@ -6,18 +6,18 @@
 void test() {
     std::ofstream output("my.txt");
     auto start = std::chrono::high_resolution_clock::now();
-    std::string str = "FSMS/1000_100_100.fsm";
+    std::string str = "FSMS/200_100_100.fsm";
     std::ifstream input(str);
     size_t output_size;
     auto table = get_table_from_FSM(input, output_size);
 
     DiagnosticSequence ds;
     ds.set_data(table, output_size);
-    auto res = ds.get_Diagnostic_Sequence();
-
-    for (size_t i = 0; i < res.size(); ++i) {
-        std::cout << res[i] << ' ';
-    }
+    auto res = ds.get_Diagnostic_Sequence(3);
+//
+//    for (size_t i = 0; i < res.size(); ++i) {
+//        std::cout << res[i] << ' ';
+//    }
 
 //    V v;
 //    v.set_table(table);

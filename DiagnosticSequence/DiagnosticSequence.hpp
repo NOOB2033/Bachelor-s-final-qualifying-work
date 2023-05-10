@@ -10,7 +10,7 @@ public:
 
     void set_data(std::vector<std::vector<std::pair<size_t, size_t>>> table, size_t output_size);
 
-    std::vector<size_t> get_Diagnostic_Sequence();
+    std::vector<size_t> get_Diagnostic_Sequence(size_t threadCount);
 private:
     bool recursive_search(std::vector<size_t>& path, std::vector<sorted_list<size_t>> sets,
                           std::pair<std::atomic<bool>, std::atomic<size_t>>& res,

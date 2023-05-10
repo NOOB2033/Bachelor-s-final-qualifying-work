@@ -25,10 +25,13 @@ std::vector<std::vector<size_t>> Vasilevsky::get_VIW(const std::vector<std::vect
 }
 
 std::vector<std::vector<size_t>> Vasilevsky::get_T(const std::vector<std::vector<size_t>>& VW,
-                                                   const std::vector<std::vector<size_t>>& VIW) {
+                                                   const std::vector<std::vector<size_t>>& VIW,
+                                                   size_t threadCount = 1) {
+    assert(threadCount > 0);
+    assert(threadCount <= std::thread::hardware_concurrency());
     auto result = VW;
     result.insert(result.end(), VIW.begin(), VIW.end());
-    result = optimization(result);
+    result = optimization(result, threadCount);
     return result;
 }
 
@@ -53,7 +56,8 @@ std::vector<std::vector<size_t>> Vasilevsky::concatenation(const std::vector<std
 }
 
 
-std::vector<std::vector<size_t>> Vasilevsky::optimization(std::vector<std::vector<size_t>>& T) {
+std::vector<std::vector<size_t>> Vasilevsky::optimization(std::vector<std::vector<size_t>>& T,
+                                                          size_t threadCount) {
     std::vector<std::vector<size_t>> result;
     std::vector<std::vector<size_t>> erase_indexes(12);
     std::sort(T.begin(), T.end(), [](std::vector<size_t>& f, std::vector<size_t>& s) {
@@ -71,7 +75,7 @@ std::vector<std::vector<size_t>> Vasilevsky::optimization(std::vector<std::vecto
     }
     indexes.push_back(it);
 
-#pragma omp parallel for
+#pragma omp parallel for num_threads(threadCount)
     for (size_t i = 0; i < indexes.size() - 1; ++i) {
         std::sort(T.begin() + indexes[i], T.begin() + indexes[i + 1],
                   [](std::vector<size_t>& f, std::vector<size_t>& s) {
